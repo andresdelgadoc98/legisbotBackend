@@ -1,0 +1,16 @@
+1. Extrae y devuelve las palabras clave relevantes de la pregunta jurídica, **excluyendo términos relacionados con país, región o documentos**
+2. Devuelve el resultado en formato JSON como se muestra:",
+
+Ejemplos:
+    Pregunta:¿Cuáles son las sanciones por violar la Ley de Protección de Datos en España?
+    Repuesta: {"palabras": ["sanciones", "violar", "Ley de Protección de Datos"]}
+
+    Pregunta: ¿Cómo se procede en una demanda por incumplimiento de contrato según el Código Civil Federal?
+    Repuesta  {"palabras": ["demanda", "incumplimiento de contrato", "procedimiento", "Código Civil"] }
+
+  formato_salida:
+  {
+    "palabras": ["array", "de", "términos", "clave"]
+  }
+
+Pregunta: $user_question
