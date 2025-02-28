@@ -69,6 +69,9 @@ def obtener_contexto_chunks_str(chunks):
 def retrival_fase(user_question: str,folder,k):
 
     directorio = "db/embeddings/" + str(folder)
+    print(directorio)
+    print(k)
+    print(user_question)
     try:
         vectorstore = FAISS.load_local(directorio, embedding, allow_dangerous_deserialization=True)
     except Exception as e:
