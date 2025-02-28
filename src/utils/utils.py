@@ -1,15 +1,11 @@
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 import PyPDF2
-
 from langchain_community.vectorstores import FAISS
 from langchain_ollama import OllamaEmbeddings
-import re
-import spacy
 from langchain_core.documents import Document
 from pdf2image import convert_from_path
 embedding = OllamaEmbeddings(model='nomic-embed-text')
 chunk_size = 450
-nlp = spacy.load("es_core_news_sm")
 from string import Template
 from dotenv import load_dotenv
 import os
