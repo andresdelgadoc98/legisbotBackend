@@ -30,12 +30,9 @@ def crear_chat():
 @main.route("<int:id_usuario>", methods=["GET"])
 @cross_origin(origin='*')
 def obtener_chats_usuario(id_usuario):
-    print(id_usuario)
     usuario = Usuario.query.get(id_usuario)
-
     if not usuario:
         return jsonify({"error": "Usuario no encontrado"}), 404
-
     chats = Chat.query.filter_by(id_usuario=id_usuario).all()
 
     chats_json = [{
@@ -43,7 +40,6 @@ def obtener_chats_usuario(id_usuario):
         "titulo": chat.titulo,
         "fecha_creacion": chat.fecha_creacion.isoformat() if chat.fecha_creacion else None
     } for chat in chats]
-
     return jsonify(chats_json), 200
 
 @main.route("obtener_contenido_chat", methods=["GET"])
@@ -82,3 +78,31 @@ def eliminar_chat(chat_id):
     db.session.delete(chat)
     db.session.commit()
     return jsonify({"mensaje": "Chat eliminado correctamente"}), 200
+
+@main.route("<int:chat_id>/contexto", methods=["PUT"])
+@cross_origin(origin='*')
+def editar_contexto(chat_id):
+    chat = Chat.query.get(chat_id)
+    if not chat:
+        return jsonify({"error": "Chat no encontrado"}), 404
+
+    data = request.get_json()
+    nuevo_contexto = data.get("contexto")
+
+    if not nuevo_contexto:
+        return jsonify({"error": "El campo 'contexto' es requerido"}), 400
+
+    chat.contexto = nuevo_contexto
+    db.session.commit()
+
+    return jsonify({"mensaje": "Contexto actualizado correctamente"}), 200
+
+
+@main.route("<int:chat_id>/contexto", methods=["GET"])
+@cross_origin(origin='*')
+def obtener_contexto(chat_id):
+    chat = Chat.query.get(chat_id)
+    if not chat:
+        return jsonify({"error": "Chat no encontrado"}), 404
+
+    return jsonify({"contexto": chat.contexto}), 200

@@ -28,6 +28,8 @@ def init_socketio(socketio):
         chat_id = data['chat_id']
         usuario_id = data['usuario_id']
         folder = data['folder']
+        chat = Chat.query.get(chat_id)
+        contexto_caso = chat.contexto if chat.contexto else ""
 
         client = OpenAI(api_key=DEEPSEEK_KEY,base_url="https://api.deepseek.com")
         palabras_clave = get_keywords(user_question)
@@ -42,10 +44,12 @@ def init_socketio(socketio):
 
         with open("prompt_generao.txt", "w", encoding="utf-8") as archivo:
             archivo.write(prompt)
-
         completion = client.chat.completions.create(
             model="deepseek-chat",
-            messages=[
+            messages=[{
+              "role":"system",
+              "content":"Contexto del caso: "+ contexto_caso
+            },
                 {
                     "role": "user",
                     "content": prompt
