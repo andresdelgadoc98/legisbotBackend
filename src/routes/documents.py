@@ -4,6 +4,7 @@ from dotenv import load_dotenv
 import json
 load_dotenv()
 main = Blueprint('documents', __name__)
+
 @main.route('', methods=['GET'])
 @cross_origin(origin='*')
 def response():

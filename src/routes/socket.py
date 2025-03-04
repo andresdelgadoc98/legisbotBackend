@@ -5,6 +5,8 @@ from dotenv import load_dotenv
 import os
 from openai import OpenAI
 from flask import request
+from db.db import db,Chat
+
 load_dotenv()
 API_OPENIA =  os.getenv("OpenAI_KEY")
 model_llm = os.getenv("MODEL_LLM")
@@ -23,6 +25,8 @@ def init_socketio(socketio):
     def handle_message(request_user):
         data = json.loads(request_user)
         user_question = data['text']
+        chat_id = data['chat_id']
+        usuario_id = data['usuario_id']
         folder = data['folder']
 
         client = OpenAI(api_key=API_OPENIA)
@@ -49,10 +53,12 @@ def init_socketio(socketio):
             ],
            stream=True
         )
-
+        bot_response = ""
         for chunk in completion:
             delta_content = chunk.choices[0].delta.content if chunk.choices[0].delta.content else ''
+            bot_response += delta_content
             socketio.emit('response', delta_content,to=request.sid)
             socketio.sleep(0)
-
         socketio.emit("response_end",to=request.sid)
+        chat = Chat()
+        chat.guardar_mensaje(chat_id, usuario_id, user_question, bot_response)
