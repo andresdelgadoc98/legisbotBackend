@@ -10,7 +10,7 @@ from db.db import db,Chat
 load_dotenv()
 API_OPENIA =  os.getenv("OpenAI_KEY")
 model_llm = os.getenv("MODEL_LLM")
-
+DEEPSEEK_KEY = os.getenv("DEEPSEEK_KEY")
 def init_socketio(socketio):
     @socketio.on('connect')
     def handle_connect():
@@ -29,7 +29,7 @@ def init_socketio(socketio):
         usuario_id = data['usuario_id']
         folder = data['folder']
 
-        client = OpenAI(api_key=API_OPENIA)
+        client = OpenAI(api_key=DEEPSEEK_KEY,base_url="https://api.deepseek.com")
         palabras_clave = get_keywords(user_question)
         retrival = retrival_fase(palabras_clave,folder,200)
         context_string = obtener_contexto_chunks_str(retrival)
@@ -44,7 +44,7 @@ def init_socketio(socketio):
             archivo.write(prompt)
 
         completion = client.chat.completions.create(
-            model="gpt-4o-mini",
+            model="deepseek-chat",
             messages=[
                 {
                     "role": "user",

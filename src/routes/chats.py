@@ -71,3 +71,14 @@ def obtener_contenido_chat():
 
     except Exception as e:
         return jsonify({"error": str(e)}), 500
+
+
+@main.route("<int:chat_id>", methods=["DELETE"])
+@cross_origin(origin='*')
+def eliminar_chat(chat_id):
+    chat = Chat.query.get(chat_id)
+    if not chat:
+        return jsonify({"error": "Chat no encontrado"}), 404
+    db.session.delete(chat)
+    db.session.commit()
+    return jsonify({"mensaje": "Chat eliminado correctamente"}), 200
