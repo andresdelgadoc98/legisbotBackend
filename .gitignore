@@ -36,3 +36,6 @@ build/
 # Ignorar archivos de entorno
 .env
 .env.local
+
+prompt_generao.txt
+
