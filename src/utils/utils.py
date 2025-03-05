@@ -75,7 +75,7 @@ def retrival_fase(user_question: str,folder,k):
     try:
         vectorstore = FAISS.load_local(directorio, embedding, allow_dangerous_deserialization=True)
     except Exception as e:
-        print(f"Error cargando el vectorstore desde {directorio}: {e}")
+        return []
 
     chunk_retriever = vectorstore.as_retriever(search_kwargs={"k": int(k)})
     resultados = chunk_retriever.invoke(user_question)
@@ -115,7 +115,7 @@ def extract_text_with_ocr(pdf_path,txt_path):
     return text
 
 
-def dict_to_embeddings(articulos_dict, db_name="codigo_civil_procedimientos"):
+def dict_to_embeddings(articulos_dict, db_name="ley_organica"):
     db_path = "db/embeddings/"
     text_splitter = RecursiveCharacterTextSplitter(chunk_size=int(450),chunk_overlap=25)
     chunks_array = []

@@ -1,11 +1,11 @@
 from flask import request, jsonify,Blueprint
 from flask_cors import cross_origin
-from dotenv import load_dotenv
-import os
+
 from langchain_ollama import OllamaEmbeddings
 from string import Template
 from src.utils.utils import retrival_fase,obtener_contexto_chunks_str,leer_txt,get_chat_response_openia
-
+from dotenv import load_dotenv
+import os
 load_dotenv()
 main = Blueprint('response', __name__)
 embedding_model = os.getenv("EMBEDDING_MODEL")
@@ -20,7 +20,11 @@ def response():
     #print(palabras_clave)
     #retrival = retrival_fase(' '.join(palabras_clave))
     retrival = retrival_fase(user_question,50)
-    context_string = obtener_contexto_chunks_str(retrival)
+    if len(retrival) == 0:
+        context_string =""
+    else:
+        context_string = obtener_contexto_chunks_str(retrival)
+
     prompt_template = leer_txt('prompt.txt')
     template = Template(prompt_template)
     prompt = template.substitute(

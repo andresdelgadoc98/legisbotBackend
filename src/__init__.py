@@ -4,7 +4,8 @@ from .routes import socket
 from .routes import rag
 from .routes import documents
 from .routes import chats
-from db.db import db  # Importar la instancia de SQLAlchemy
+from .routes import usuarios
+from db.db import db
 from dotenv import load_dotenv
 import os
 
@@ -26,7 +27,7 @@ def create_app():
     app.register_blueprint(rag.main, url_prefix='/')
     app.register_blueprint(documents.main, url_prefix='/documents')
     app.register_blueprint(chats.main, url_prefix='/chats')
-
+    app.register_blueprint(usuarios.main, url_prefix='/users')
     socketio.init_app(app)
     socket.init_socketio(socketio)
 

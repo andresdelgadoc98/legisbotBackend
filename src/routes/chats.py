@@ -2,10 +2,9 @@ from flask import request, jsonify, Blueprint
 from db.db import Chat, Usuario, db
 from flask_cors import cross_origin
 from sqlalchemy.orm.exc import NoResultFound
-
+from sqlalchemy import desc
 
 main = Blueprint('chats', __name__)
-
 @main.route("", methods=["POST"])
 @cross_origin(origin='*')
 def crear_chat():
@@ -26,28 +25,31 @@ def crear_chat():
 
     return jsonify({"mensaje": "Chat creado", "chat_id": nuevo_chat.id}), 201
 
-
-@main.route("<int:id_usuario>", methods=["GET"])
+@main.route("<id_usuario>", methods=["GET"])
 @cross_origin(origin='*')
 def obtener_chats_usuario(id_usuario):
+
     usuario = Usuario.query.get(id_usuario)
     if not usuario:
         return jsonify({"error": "Usuario no encontrado"}), 404
-    chats = Chat.query.filter_by(id_usuario=id_usuario).all()
+
+    chats = Chat.query.filter_by(id_usuario=id_usuario).order_by(desc(Chat.fecha_creacion)).all()
 
     chats_json = [{
         "id": chat.id,
         "titulo": chat.titulo,
         "fecha_creacion": chat.fecha_creacion.isoformat() if chat.fecha_creacion else None
     } for chat in chats]
+
+
     return jsonify(chats_json), 200
 
 @main.route("obtener_contenido_chat", methods=["GET"])
 @cross_origin(origin='*')
 def obtener_contenido_chat():
 
-    chat_id = request.args.get('chat_id', type=int)
-    usuario_id = request.args.get('usuario_id', type=int)
+    chat_id = request.args.get('chat_id', type=str)
+    usuario_id = request.args.get('usuario_id', type=str)
     print(chat_id)
     print( usuario_id)
     if not chat_id or not usuario_id:
@@ -69,7 +71,7 @@ def obtener_contenido_chat():
         return jsonify({"error": str(e)}), 500
 
 
-@main.route("<int:chat_id>", methods=["DELETE"])
+@main.route("<chat_id>", methods=["DELETE"])
 @cross_origin(origin='*')
 def eliminar_chat(chat_id):
     chat = Chat.query.get(chat_id)
@@ -79,7 +81,7 @@ def eliminar_chat(chat_id):
     db.session.commit()
     return jsonify({"mensaje": "Chat eliminado correctamente"}), 200
 
-@main.route("<int:chat_id>/contexto", methods=["PUT"])
+@main.route("<chat_id>/contexto", methods=["PUT"])
 @cross_origin(origin='*')
 def editar_contexto(chat_id):
     chat = Chat.query.get(chat_id)
@@ -97,8 +99,7 @@ def editar_contexto(chat_id):
 
     return jsonify({"mensaje": "Contexto actualizado correctamente"}), 200
 
-
-@main.route("<int:chat_id>/contexto", methods=["GET"])
+@main.route("<chat_id>/contexto", methods=["GET"])
 @cross_origin(origin='*')
 def obtener_contexto(chat_id):
     chat = Chat.query.get(chat_id)

@@ -1,16 +1,17 @@
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.ext.mutable import MutableList
 from sqlalchemy.orm.attributes import flag_modified
+from sqlalchemy.dialects.postgresql import UUID
+from sqlalchemy.sql import func
 db = SQLAlchemy()
 
 class Usuario(db.Model):
     __tablename__ = "usuarios"
-    id = db.Column(db.Integer, primary_key=True)
+    id = db.Column(UUID(as_uuid=True), primary_key=True, server_default=func.gen_random_uuid())
     nombre = db.Column(db.String(100), nullable=False)
     email = db.Column(db.String(100), unique=True, nullable=False)
     contraseña = db.Column(db.String(255), nullable=False)
     fecha_registro = db.Column(db.DateTime, default=db.func.current_timestamp())
-
     chats = db.relationship("Chat", backref="usuario", lazy=True)
 
 class Chat(db.Model):

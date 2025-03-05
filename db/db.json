@@ -9,4 +9,29 @@
 {
     "folder": "ley_federal",
     "name": "Ley Federal del Trabajo"
-}]
+},
+{
+    "folder": "codigo_penal_federal",
+    "name": "Código Penal Federal"
+},
+    {
+    "folder": "derechos_humanos",
+    "name": "Derechos Humanos"
+},
+    {
+    "folder": "ley_agria",
+    "name": "Ley Agria"
+},
+        {
+    "folder": "ley_amparo",
+    "name": "Ley Amparo"
+},
+        {
+    "folder": "leyes_ninios",
+    "name": "Leyes Niños"
+},
+    {
+    "folder": "procedimientos_penales",
+    "name": "Procedimientos Penales"
+}
+]

@@ -24,6 +24,7 @@ def init_socketio(socketio):
     @socketio.on('message')
     def handle_message(request_user):
         data = json.loads(request_user)
+        print(data)
         user_question = data['text']
         chat_id = data['chat_id']
         usuario_id = data['usuario_id']
@@ -34,7 +35,11 @@ def init_socketio(socketio):
         client = OpenAI(api_key=DEEPSEEK_KEY,base_url="https://api.deepseek.com")
         palabras_clave = get_keywords(user_question)
         retrival = retrival_fase(palabras_clave,folder,200)
-        context_string = obtener_contexto_chunks_str(retrival)
+        if len(retrival) == 0:
+            context_string =""
+        else:
+            context_string = obtener_contexto_chunks_str(retrival)
+
         prompt_template = leer_txt('prompt.txt')
         template = Template(prompt_template)
         prompt = template.substitute(
@@ -57,12 +62,14 @@ def init_socketio(socketio):
             ],
            stream=True
         )
+
         bot_response = ""
         for chunk in completion:
             delta_content = chunk.choices[0].delta.content if chunk.choices[0].delta.content else ''
             bot_response += delta_content
             socketio.emit('response', delta_content,to=request.sid)
             socketio.sleep(0)
+
         socketio.emit("response_end",to=request.sid)
         chat = Chat()
         chat.guardar_mensaje(chat_id, usuario_id, user_question, bot_response)
