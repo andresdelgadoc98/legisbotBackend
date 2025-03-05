@@ -96,11 +96,13 @@ def login():
         return jsonify({"error": str(e)}), 500
 
 
-@main.route("/refresh-token", methods=["POST"])
+@main.route("/refresh_token", methods=["POST"])
 @cross_origin(origin='*')
 def refresh_token():
     try:
-        refresh_token = request.cookies.get("refresh_token")
+        data = request.get_json()
+        refresh_token = data.get("refresh_token")
+
         if not refresh_token:
             return jsonify({"error": "Refresh token no proporcionado"}), 400
         try:
