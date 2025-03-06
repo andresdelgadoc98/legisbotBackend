@@ -11,6 +11,7 @@ load_dotenv()
 API_OPENIA =  os.getenv("OpenAI_KEY")
 model_llm = os.getenv("MODEL_LLM")
 DEEPSEEK_KEY = os.getenv("DEEPSEEK_KEY")
+GEMMA_KEY = os.getenv("GEMMA_KEY")
 def init_socketio(socketio):
     @socketio.on('connect')
     def handle_connect():
@@ -30,11 +31,11 @@ def init_socketio(socketio):
         usuario_id = data['usuario_id']
         folder = data['folder']
         searchType = data['searchType'] # documentos | jurisprudencias
-
+        print(searchType)
         chat = Chat.query.get(chat_id)
         contexto_caso = chat.contexto if chat.contexto else ""
 
-        client = OpenAI(api_key=DEEPSEEK_KEY,base_url="https://api.deepseek.com")
+        client = OpenAI(api_key=GEMMA_KEY,base_url="https://generativelanguage.googleapis.com/v1beta/openai/")
         if(searchType == "documentos"):
             palabras_clave = get_keywords(user_question)
             retrival = retrival_fase(palabras_clave,folder,200)
@@ -71,7 +72,7 @@ def init_socketio(socketio):
             archivo.write(prompt)
 
         completion = client.chat.completions.create(
-            model="deepseek-chat",
+            model="gemini-2.0-flash",
             messages=[{
               "role":"system",
               "content":"Contexto del caso: "+ contexto_caso

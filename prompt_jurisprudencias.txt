@@ -2,5 +2,4 @@ Retorname aquellas jurisprudencias que  puedan tener relación con el contexto,
 y al final agrega el link de referencia que esta dado por el ius y el link es decir, solo dale al usuario el rubro y el link no incluyas nada más:
 https://sjf2.scjn.gob.mx/detalle/tesis/{ius}
 Contexto: $context_caso
-Mi cliente es el  promovente fémina el cual inicio juicio ordinario civil de alimentos a favor de sus dos menores hijos en contra del padre que es el deudor alimentista
 Jurisprudencias: $jurisprudencias
