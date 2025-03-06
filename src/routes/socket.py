@@ -1,5 +1,5 @@
 import json
-from src.utils.utils import retrival_fase,obtener_contexto_chunks_str,leer_txt,get_keywords
+from src.utils.utils import retrival_fase,obtener_contexto_chunks_str,leer_txt,get_keywords,get_all_jurisprudencias
 from string import Template
 from dotenv import load_dotenv
 import os
@@ -29,26 +29,47 @@ def init_socketio(socketio):
         chat_id = data['chat_id']
         usuario_id = data['usuario_id']
         folder = data['folder']
+        searchType = data['searchType'] # documentos | jurisprudencias
+
         chat = Chat.query.get(chat_id)
         contexto_caso = chat.contexto if chat.contexto else ""
 
         client = OpenAI(api_key=DEEPSEEK_KEY,base_url="https://api.deepseek.com")
-        palabras_clave = get_keywords(user_question)
-        retrival = retrival_fase(palabras_clave,folder,200)
-        if len(retrival) == 0:
-            context_string =""
-        else:
-            context_string = obtener_contexto_chunks_str(retrival)
+        if(searchType == "documentos"):
+            palabras_clave = get_keywords(user_question)
+            retrival = retrival_fase(palabras_clave,folder,200)
+            if len(retrival) == 0:
+                context_string =""
+            else:
+                context_string = obtener_contexto_chunks_str(retrival)
 
-        prompt_template = leer_txt('prompt.txt')
-        template = Template(prompt_template)
-        prompt = template.substitute(
-            context_string=context_string,
-            user_question=user_question,
-        )
+            prompt_template = leer_txt('prompt.txt')
+            template = Template(prompt_template)
+            prompt = template.substitute(
+                context_string=context_string,
+                user_question=user_question,
+            )
+        elif(searchType == "jurisprudencias"):
+            jurisprudencias = get_all_jurisprudencias(user_question)
+            prompt_template = leer_txt('prompt_jurisprudencias.txt')
+            template = Template(prompt_template)
+            prompt = template.substitute(
+                context_caso=contexto_caso,
+                jurisprudencias=json.dumps(jurisprudencias),
+            )
+        elif not searchType:
+            prompt_template = leer_txt('prompt.txt')
+            template = Template(prompt_template)
+            context_string = ""
+            prompt = template.substitute(
+                context_string=context_string,
+                user_question=user_question,
+            )
+
 
         with open("prompt_generao.txt", "w", encoding="utf-8") as archivo:
             archivo.write(prompt)
+
         completion = client.chat.completions.create(
             model="deepseek-chat",
             messages=[{
