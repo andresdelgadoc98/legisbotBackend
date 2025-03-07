@@ -1,10 +1,11 @@
+import eventlet
+eventlet.monkey_patch()
 from src import create_app
 from dotenv import load_dotenv
 import os
 import ssl
-import eventlet
-from flask_sqlalchemy import SQLAlchemy
-eventlet.monkey_patch()
+
+
 load_dotenv()
 PORT = os.getenv("PORT")
 mode = os.getenv('MODE', 'development')
