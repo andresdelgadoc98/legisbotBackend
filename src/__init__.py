@@ -9,7 +9,6 @@ from db.db import db
 from dotenv import load_dotenv
 import os
 
-# Cargar las variables de entorno desde el archivo .env
 load_dotenv()
 
 socketio = SocketIO(ping_timeout=60, ping_interval=25, cors_allowed_origins="*", async_mode='eventlet')
@@ -17,8 +16,6 @@ socketio = SocketIO(ping_timeout=60, ping_interval=25, cors_allowed_origins="*",
 
 def create_app():
     app = Flask(__name__)
-
-    # Usar las variables de entorno
     app.config['SECRET_KEY'] = os.getenv('SECRET_KEY')
     app.config["SQLALCHEMY_DATABASE_URI"] = os.getenv("SQLALCHEMY_DATABASE_URI")
     app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
@@ -28,7 +25,7 @@ def create_app():
     app.register_blueprint(chats.main, url_prefix='/chats')
     app.register_blueprint(usuarios.main, url_prefix='/users')
     socketio.init_app(app)
-    socket.init_socketio(socketio)
+    socket.init_socketio(socketio,app)
 
     with app.app_context():
         db.create_all()
