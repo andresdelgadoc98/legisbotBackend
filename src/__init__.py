@@ -12,8 +12,7 @@ import os
 # Cargar las variables de entorno desde el archivo .env
 load_dotenv()
 
-# Crear la instancia de SocketIO
-socketio = SocketIO(ping_timeout=60, ping_interval=25, cors_allowed_origins="*")
+socketio = SocketIO(ping_timeout=60, ping_interval=25, cors_allowed_origins="*", async_mode='eventlet')
 
 
 def create_app():

@@ -1,4 +1,4 @@
-from src import create_app, socketio
+from src import create_app
 from dotenv import load_dotenv
 import os
 import ssl
