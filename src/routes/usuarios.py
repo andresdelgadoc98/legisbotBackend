@@ -132,3 +132,18 @@ def refresh_token():
 
     except Exception as e:
         return jsonify({"error": str(e)}), 500
+
+@main.route('<uuid:usuario_id>', methods=['GET'])
+@cross_origin(origin='*')
+def obtener_usuario(usuario_id):
+    try:
+        usuario = Usuario.query.get(usuario_id)
+        if not usuario:
+            return jsonify({"error": "Usuario no encontrado"}), 404
+        return jsonify({
+            "email": usuario.email,
+            "nombre": usuario.nombre
+        }), 200
+
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
