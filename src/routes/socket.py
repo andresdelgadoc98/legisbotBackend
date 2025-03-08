@@ -38,7 +38,9 @@ def init_socketio(socketio,app):
                 chat = Chat.query.get(chat_id)
                 contexto_caso = chat.contexto if chat.contexto else ""
 
+                #client = OpenAI(api_key=GEMMA_KEY, base_url="https://generativelanguage.googleapis.com/v1beta/openai/")
                 client = OpenAI(api_key=GEMMA_KEY, base_url="https://generativelanguage.googleapis.com/v1beta/openai/")
+
                 if searchType == "documentos":
                     palabras_clave = get_keywords(user_question)
                     retrival = retrival_fase(palabras_clave, folder, 200)
@@ -58,7 +60,7 @@ def init_socketio(socketio,app):
                         jurisprudencias=json.dumps(jurisprudencias),
                     )
                 else:
-                    prompt_template = leer_txt('prompt.txt')
+                    prompt_template = leer_txt('prompt_general.txt')
                     template = Template(prompt_template)
                     prompt = template.substitute(
                         context_string="",
@@ -71,8 +73,9 @@ def init_socketio(socketio,app):
                 completion = client.chat.completions.create(
                     model="gemini-2.0-flash",
                     messages=[{
+
                         "role": "system",
-                        "content": "Contexto del caso: " + contexto_caso
+                        "content": "Eres un asistente juridico llamado Halach Contexto: " + contexto_caso
                     }, {
                         "role": "user",
                         "content": prompt
