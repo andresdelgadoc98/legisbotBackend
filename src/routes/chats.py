@@ -57,11 +57,11 @@ def obtener_contenido_chat():
 
     try:
         chat = Chat.query.filter_by(id=chat_id, id_usuario=usuario_id).one()
-
         return jsonify({
             "chat_id": chat.id,
             "usuario_id": chat.id_usuario,
-            "contenido": chat.contenido
+            "contenido": chat.contenido,
+            "preferencia": chat.preferencia
         }), 200
 
     except NoResultFound:
@@ -107,3 +107,23 @@ def obtener_contexto(chat_id):
         return jsonify({"error": "Chat no encontrado"}), 404
 
     return jsonify({"contexto": chat.contexto}), 200
+
+
+@main.route('<chat_id>/preferencia', methods=['PUT'])
+@cross_origin(origin='*')
+def actualizar_preferencia(chat_id):
+    chat = Chat.query.get(chat_id)
+    if not chat:
+        return jsonify({"error": "Chat no encontrado"}), 404
+
+    data = request.get_json()
+    if not data or "preferencia" not in data:
+        return jsonify({"error": "Datos inválidos"}), 400
+
+    try:
+        chat.preferencia = data["preferencia"]
+        db.session.commit()
+        return jsonify({"mensaje": "Preferencia actualizada correctamente", "preferencia": chat.preferencia}), 200
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({"error": str(e)}), 500

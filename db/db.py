@@ -3,6 +3,7 @@ from sqlalchemy.ext.mutable import MutableList
 from sqlalchemy.orm.attributes import flag_modified
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.sql import func
+from sqlalchemy import JSON
 
 db = SQLAlchemy()
 
@@ -19,10 +20,11 @@ class Chat(db.Model):
     __tablename__ = "chats"
     id = db.Column(db.Integer, primary_key=True)
     titulo = db.Column(db.String(100), nullable=False)
-    id_usuario = db.Column(db.Integer, db.ForeignKey("usuarios.id"), nullable=False)  # Usa id_usuario
+    id_usuario = db.Column(db.Integer, db.ForeignKey("usuarios.id"), nullable=False)
     contenido = db.Column(MutableList.as_mutable(db.JSON), nullable=True, default=list)
     fecha_creacion = db.Column(db.DateTime, default=db.func.current_timestamp())
     contexto = db.Column(db.Text, nullable=True)
+    preferencia = db.Column(JSON, default={"searchType": None,"document":""})
 
 
     def guardar_mensaje(self, chat_id, usuario_id, user_question, bot_response):
