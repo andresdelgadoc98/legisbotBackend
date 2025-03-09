@@ -68,19 +68,15 @@ def obtener_contexto_chunks_str(chunks):
 
     return contexto_str.strip()
 
-def retrival_fase(user_question: str,folder,k):
-
+def retrival_fase(palabras_clave: str,folder,k):
     directorio = "db/embeddings/" + str(folder)
-    print(directorio)
-    print(k)
-    print(user_question)
     try:
         vectorstore = FAISS.load_local(directorio, embedding, allow_dangerous_deserialization=True)
     except Exception as e:
         return []
-
     chunk_retriever = vectorstore.as_retriever(search_kwargs={"k": int(k)})
-    resultados = chunk_retriever.invoke(user_question)
+    print(' '.join(palabras_clave))
+    resultados = chunk_retriever.invoke(' '.join(palabras_clave))
     return resultados
 
 def leer_txt(nombre_archivo : str) -> str:
@@ -157,7 +153,8 @@ def get_keywords(user_question):
         )
         response = get_chat_response_openia(prompt)
         print(response)
-        return ' '.join(clean_json(response))
+
+        return clean_json(response)
 
 def getJurisprudenciasInitial(key_words, page):
     url = "https://sjf2.scjn.gob.mx/services/sjftesismicroservice/api/public/tesis?page=" + str(page) + "&size=20"

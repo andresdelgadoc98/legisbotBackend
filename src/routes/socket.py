@@ -5,7 +5,7 @@ from dotenv import load_dotenv
 import os
 from openai import OpenAI
 from flask import request
-from db.db import db,Chat
+from db.db import Chat
 import eventlet
 from flask import current_app,copy_current_request_context
 
@@ -38,14 +38,16 @@ def init_socketio(socketio,app):
                 chat = Chat.query.get(chat_id)
                 contexto_caso = chat.contexto if chat.contexto else ""
 
-                #client = OpenAI(api_key=GEMMA_KEY, base_url="https://generativelanguage.googleapis.com/v1beta/openai/")
                 client = OpenAI(api_key=GEMMA_KEY, base_url="https://generativelanguage.googleapis.com/v1beta/openai/")
-
+                #client = OpenAI(api_key=DEEPSEEK_KEY, base_url="https://api.deepseek.com")
+                #client = OpenAI(api_key=API_OPENIA)
                 if searchType == "documentos":
-                    palabras_clave = get_keywords(user_question)
+                    palabras_clave = get_keywords(user_question)["palabras"]
                     retrival = retrival_fase(palabras_clave, folder, 200)
+
                     context_string = obtener_contexto_chunks_str(retrival) if retrival else ""
-                    prompt_template = leer_txt('prompt.txt')
+                    print(context_string)
+                    prompt_template = leer_txt('src/prompts/prompt_search_documents.txt')
                     template = Template(prompt_template)
                     prompt = template.substitute(
                         context_string=context_string,
@@ -53,14 +55,14 @@ def init_socketio(socketio,app):
                     )
                 elif searchType == "jurisprudencias":
                     jurisprudencias = get_all_jurisprudencias(user_question)
-                    prompt_template = leer_txt('prompt_jurisprudencias.txt')
+                    prompt_template = leer_txt('src/prompts/prompt_jurisprudencias.txt')
                     template = Template(prompt_template)
                     prompt = template.substitute(
                         context_caso=contexto_caso,
                         jurisprudencias=json.dumps(jurisprudencias),
                     )
                 else:
-                    prompt_template = leer_txt('prompt_general.txt')
+                    prompt_template = leer_txt('src/prompts/prompt_general.txt')
                     template = Template(prompt_template)
                     prompt = template.substitute(
                         context_string="",
@@ -71,7 +73,7 @@ def init_socketio(socketio,app):
                     archivo.write(prompt)
 
                 completion = client.chat.completions.create(
-                    model="gemini-2.0-flash",
+                    model=model_llm,
                     messages=[{
 
                         "role": "system",
