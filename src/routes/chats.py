@@ -3,6 +3,7 @@ from db.db import Chat, Usuario, db
 from flask_cors import cross_origin
 from sqlalchemy.orm.exc import NoResultFound
 from sqlalchemy import desc
+from src.utils.middlewares import token_required
 
 main = Blueprint('chats', __name__)
 @main.route("", methods=["POST"])
@@ -27,6 +28,7 @@ def crear_chat():
 
 @main.route("<id_usuario>", methods=["GET"])
 @cross_origin(origin='*')
+@token_required
 def obtener_chats_usuario(id_usuario):
 
     usuario = Usuario.query.get(id_usuario)

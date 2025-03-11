@@ -5,7 +5,6 @@ from dotenv import load_dotenv
 import os
 import ssl
 
-
 load_dotenv()
 PORT = os.getenv("PORT")
 mode = os.getenv('MODE', 'development')

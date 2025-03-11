@@ -43,7 +43,7 @@ def init_socketio(socketio,app):
                 client = OpenAI(api_key=API_OPENIA)
                 if searchType == "documentos":
                     palabras_clave = get_keywords(user_question)["palabras"]
-                    retrival = retrival_fase(palabras_clave, folder, 150)
+                    retrival = retrival_fase(palabras_clave, folder, 200)
                     context_string = obtener_contexto_chunks_str(retrival) if retrival else ""
                     print(context_string)
                     prompt_template = leer_txt('src/prompts/prompt_search_documents.txt')

@@ -1,17 +1,15 @@
-from flask import request, jsonify, Blueprint
+from flask import request, jsonify, Blueprint,make_response
 from db.db import Usuario, db
 from flask_cors import cross_origin
 import bcrypt
 import jwt
 from datetime import datetime, timedelta
-
 from dotenv import load_dotenv
 import os
 load_dotenv()
 
 SECRET_KEY_REFRESH = os.getenv("SECRET_KEY_REFRESH")
-SECRET_KEY = os.getenv("SECRET_KEY")
-
+SECRET_KEY_ACCESS = os.getenv("SECRET_KEY_ACCESS")
 ACCESS_TOKEN_EXPIRATION = 15
 REFRESH_TOKEN_EXPIRATION = 7
 
@@ -67,71 +65,50 @@ def login():
 
         if not bcrypt.checkpw(contraseña.encode("utf-8"), usuario.contraseña.encode("utf-8")):
             return jsonify({"error": "Credenciales inválidas"}), 401
+
         usuario_id = str(usuario.id)
+
         access_token = jwt.encode(
             {
                 "sub": usuario_id,
                 "exp": datetime.utcnow() + timedelta(minutes=ACCESS_TOKEN_EXPIRATION),
             },
-            SECRET_KEY,
+            SECRET_KEY_ACCESS,
             algorithm="HS256",
         )
+
         refresh_token = jwt.encode(
             {
                 "sub": usuario_id,
                 "exp": datetime.utcnow() + timedelta(days=REFRESH_TOKEN_EXPIRATION),
             },
-            SECRET_KEY,
+            SECRET_KEY_REFRESH,
             algorithm="HS256",
         )
 
-        return jsonify({
+        response = make_response(jsonify({
             "mensaje": "Inicio de sesión exitoso",
             "access_token": access_token,
-            "refresh_token": refresh_token,
-        }), 200
+            "refresh_token":refresh_token
+        }))
+
+        response.set_cookie(
+            "refresh_token",
+            refresh_token,
+            httponly=True,
+            secure=False,
+            samesite="Lax",
+            max_age=REFRESH_TOKEN_EXPIRATION * 24 * 3600
+        )
+
+        return response, 200
 
     except Exception as e:
         print(e)
         return jsonify({"error": str(e)}), 500
 
 
-@main.route("/refresh_token", methods=["POST"])
-@cross_origin(origin='*')
-def refresh_token():
-    try:
-        data = request.get_json()
-        refresh_token = data.get("refresh_token")
 
-        if not refresh_token:
-            return jsonify({"error": "Refresh token no proporcionado"}), 400
-        try:
-            payload = jwt.decode(refresh_token, SECRET_KEY, algorithms=["HS256"])
-        except jwt.ExpiredSignatureError:
-            return jsonify({"error": "Refresh token expirado"}), 401
-        except jwt.InvalidTokenError:
-            return jsonify({"error": "Refresh token inválido"}), 401
-
-        usuario_id = payload.get("sub")
-        if not usuario_id:
-            return jsonify({"error": "Refresh token inválido"}), 401
-
-        access_token = jwt.encode(
-            {
-                "sub": usuario_id,
-                "exp": datetime.utcnow() + timedelta(minutes=ACCESS_TOKEN_EXPIRATION),
-            },
-            SECRET_KEY,
-            algorithm="HS256",
-        )
-
-        return jsonify({
-            "mensaje": "Access token renovado exitosamente",
-            "access_token": access_token,
-        }), 200
-
-    except Exception as e:
-        return jsonify({"error": str(e)}), 500
 
 @main.route('<uuid:usuario_id>', methods=['GET'])
 @cross_origin(origin='*')
