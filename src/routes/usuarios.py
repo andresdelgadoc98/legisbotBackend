@@ -6,6 +6,7 @@ import jwt
 from datetime import datetime, timedelta
 from dotenv import load_dotenv
 import os
+from src.utils.middlewares import token_required
 load_dotenv()
 
 SECRET_KEY_REFRESH = os.getenv("SECRET_KEY_REFRESH")
@@ -18,6 +19,7 @@ main = Blueprint('users', __name__)
 
 @main.route("", methods=["POST"])
 @cross_origin(origin='*')
+
 def registro():
     try:
         data = request.get_json()
@@ -106,9 +108,6 @@ def login():
     except Exception as e:
         print(e)
         return jsonify({"error": str(e)}), 500
-
-
-
 
 @main.route('<uuid:usuario_id>', methods=['GET'])
 @cross_origin(origin='*')

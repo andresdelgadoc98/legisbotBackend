@@ -28,7 +28,6 @@ def crear_chat():
 
 @main.route("<id_usuario>", methods=["GET"])
 @cross_origin(origin='*')
-@token_required
 def obtener_chats_usuario(id_usuario):
 
     usuario = Usuario.query.get(id_usuario)

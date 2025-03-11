@@ -3,7 +3,7 @@ from flask_cors import cross_origin
 from dotenv import load_dotenv
 import json
 import os
-
+from src.utils.middlewares import token_required
 
 
 load_dotenv()

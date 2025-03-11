@@ -4,7 +4,7 @@ import jwt
 from datetime import datetime, timedelta
 from dotenv import load_dotenv
 import os
-from src.utils.middlewares import token_required
+
 
 load_dotenv()
 

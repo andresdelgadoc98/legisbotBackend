@@ -26,6 +26,7 @@ def init_socketio(socketio,app):
 
     @socketio.on('message')
     def handle_message(request_user):
+
         @copy_current_request_context
         def procesar_mensaje(data):
             with current_app.app_context():
@@ -34,7 +35,7 @@ def init_socketio(socketio,app):
                 usuario_id = data['usuario_id']
                 folder = data['folder']
                 searchType = data['searchType']
-
+                print(data)
                 chat = Chat.query.get(chat_id)
                 contexto_caso = chat.contexto if chat.contexto else ""
 
