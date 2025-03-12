@@ -4,23 +4,24 @@ import jwt
 from datetime import datetime, timedelta
 from dotenv import load_dotenv
 import os
-
+from src.utils.middlewares import validar_licencia
 
 load_dotenv()
 
 SECRET_KEY_REFRESH = os.getenv("SECRET_KEY_REFRESH")
-SECRET_KEY_ACCESS = os.getenv("SECRET_KEY")
-ACCESS_TOKEN_EXPIRATION = 15
+SECRET_KEY_ACCESS = os.getenv("SECRET_KEY_ACCESS")
+ACCESS_TOKEN_EXPIRATION = int(os.getenv("ACCESS_TOKEN_EXPIRATION"))
 
 
 main = Blueprint('token', __name__)
 
+
 @main.route("/refresh_token", methods=["POST"])
-@cross_origin(origin='*',supports_credentials=True)
+@cross_origin(origin='*', supports_credentials=True)
+@validar_licencia
 def get_acces_token():
     try:
         refresh_token = request.cookies.get("refresh_token")
-        print("refresh_token",refresh_token)
         if not refresh_token:
             return jsonify({"error": "Refresh token no proporcionado"}), 403
         try:
@@ -42,7 +43,7 @@ def get_acces_token():
             SECRET_KEY_ACCESS,
             algorithm="HS256",
         )
-
+        print("acces token refresh:",access_token)
         return jsonify({
             "mensaje": "Access token renovado exitosamente",
                 "access_token": access_token,
@@ -53,9 +54,10 @@ def get_acces_token():
 
 @main.route("/very_refresh_token", methods=["POST"])
 @cross_origin(origin='*',supports_credentials=True)
+
 def very_refresh_token():
     try:
-        refresh_token = request.cookies.get("refresh_token")
+        refresh_token = request
         print("very_token", refresh_token)
         if not refresh_token:
             return jsonify({

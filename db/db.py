@@ -15,6 +15,7 @@ class Usuario(db.Model):
     contraseña = db.Column(db.String(255), nullable=False)
     fecha_registro = db.Column(db.DateTime, default=db.func.current_timestamp())
     chats = db.relationship("Chat", backref="usuario", lazy=True)
+    licencia_id = db.Column(db.String(36), db.ForeignKey("licencias.id"), nullable=True)  # Relación con licencias
 
 class Chat(db.Model):
     __tablename__ = "chats"
@@ -25,7 +26,6 @@ class Chat(db.Model):
     fecha_creacion = db.Column(db.DateTime, default=db.func.current_timestamp())
     contexto = db.Column(db.Text, nullable=True)
     preferencia = db.Column(JSON, default={"searchType": None,"document":""})
-
 
     def guardar_mensaje(self, chat_id, usuario_id, user_question, bot_response):
         chat = Chat.query.filter_by(id=chat_id, id_usuario=usuario_id).first()
@@ -43,3 +43,15 @@ class Chat(db.Model):
             print("Mensaje guardado exitosamente.")
         else:
             print(f"No se encontró el chat con ID {chat_id} y usuario ID {usuario_id}.")
+
+class Licencia(db.Model):
+    __tablename__ = "licencias"
+
+    id = db.Column(UUID(as_uuid=True), primary_key=True, server_default=func.gen_random_uuid())
+    nombre_licencia = db.Column(db.String(100), nullable=False)
+    fecha_inicio = db.Column(db.Date, nullable=False)
+    fecha_fin = db.Column(db.Date, nullable=False)
+    fecha_creacion = db.Column(db.DateTime, default=db.func.current_timestamp())
+    usuarios = db.relationship("Usuario", backref="licencia", lazy=True)
+
+

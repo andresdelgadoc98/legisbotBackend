@@ -11,6 +11,7 @@ main = Blueprint('documents', __name__)
 
 @main.route('', methods=['GET'])
 @cross_origin(origin='*')
+@token_required
 def response():
     ruta_archivo = 'db/db.json'
     with open(ruta_archivo, 'r', encoding='utf-8') as archivo:
@@ -20,14 +21,10 @@ def response():
 @main.route('/documentos/<nombre_documento>', methods=['GET'])
 def ver_documento(nombre_documento):
     try:
-        # Construir la ruta completa del documento
         file = os.path.join(os.getcwd(), "db/pdfs/", nombre_documento)
         print(file)
-        # Verificar si el archivo existe
         if not os.path.exists(file):
             abort(404, description="Documento no encontrado")
-
-        # Enviar el archivo como respuesta
         return send_file(file, as_attachment=False)
     except Exception as e:
         return jsonify({"error": str(e)}), 500

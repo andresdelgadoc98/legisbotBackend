@@ -8,6 +8,7 @@ from src.utils.middlewares import token_required
 main = Blueprint('chats', __name__)
 @main.route("", methods=["POST"])
 @cross_origin(origin='*')
+@token_required
 def crear_chat():
     data = request.json
     titulo = data.get("titulo")
@@ -28,6 +29,7 @@ def crear_chat():
 
 @main.route("<id_usuario>", methods=["GET"])
 @cross_origin(origin='*')
+@token_required
 def obtener_chats_usuario(id_usuario):
 
     usuario = Usuario.query.get(id_usuario)
@@ -47,6 +49,7 @@ def obtener_chats_usuario(id_usuario):
 
 @main.route("obtener_contenido_chat", methods=["GET"])
 @cross_origin(origin='*')
+@token_required
 def obtener_contenido_chat():
 
     chat_id = request.args.get('chat_id', type=str)
@@ -74,6 +77,7 @@ def obtener_contenido_chat():
 
 @main.route("<chat_id>", methods=["DELETE"])
 @cross_origin(origin='*')
+@token_required
 def eliminar_chat(chat_id):
     chat = Chat.query.get(chat_id)
     if not chat:
@@ -84,6 +88,7 @@ def eliminar_chat(chat_id):
 
 @main.route("<chat_id>/contexto", methods=["PUT"])
 @cross_origin(origin='*')
+@token_required
 def editar_contexto(chat_id):
     chat = Chat.query.get(chat_id)
     if not chat:
@@ -102,6 +107,7 @@ def editar_contexto(chat_id):
 
 @main.route("<chat_id>/contexto", methods=["GET"])
 @cross_origin(origin='*')
+@token_required
 def obtener_contexto(chat_id):
     chat = Chat.query.get(chat_id)
     if not chat:
@@ -112,6 +118,7 @@ def obtener_contexto(chat_id):
 
 @main.route('<chat_id>/preferencia', methods=['PUT'])
 @cross_origin(origin='*')
+@token_required
 def actualizar_preferencia(chat_id):
     chat = Chat.query.get(chat_id)
     if not chat:

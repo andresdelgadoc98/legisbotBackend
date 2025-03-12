@@ -13,6 +13,7 @@ embedding = OllamaEmbeddings(model=embedding_model)
 
 @main.route('generate', methods=['POST'])
 @cross_origin(origin='*')
+
 def response():
     data = request.json
     user_question = data.get('user_question', 'No user_question provided')

@@ -1,5 +1,5 @@
 from flask import request, jsonify, Blueprint,make_response
-from db.db import Usuario, db
+from db.db import Usuario, db,Licencia
 from flask_cors import cross_origin
 import bcrypt
 import jwt
@@ -11,21 +11,22 @@ load_dotenv()
 
 SECRET_KEY_REFRESH = os.getenv("SECRET_KEY_REFRESH")
 SECRET_KEY_ACCESS = os.getenv("SECRET_KEY_ACCESS")
-ACCESS_TOKEN_EXPIRATION = 15
-REFRESH_TOKEN_EXPIRATION = 7
+ACCESS_TOKEN_EXPIRATION = int(os.getenv("ACCESS_TOKEN_EXPIRATION"))
+REFRESH_TOKEN_EXPIRATION = int(os.getenv("REFRESH_TOKEN_EXPIRATION"))
 
 
 main = Blueprint('users', __name__)
 
 @main.route("", methods=["POST"])
 @cross_origin(origin='*')
-
 def registro():
     try:
         data = request.get_json()
         nombre = data.get("nombre")
         email = data.get("email")
         contraseña = data.get("contraseña")
+        licencia_id =  data.get("licencia_id")
+        print(licencia_id)
 
         if not nombre or not email or not contraseña:
             return jsonify({"error": "Faltan datos"}), 400
@@ -39,6 +40,7 @@ def registro():
             nombre=nombre,
             email=email,
             contraseña=contraseña_hasheada.decode("utf-8"),
+            licencia_id=licencia_id
         )
 
         db.session.add(nuevo_usuario)
@@ -70,6 +72,20 @@ def login():
 
         usuario_id = str(usuario.id)
 
+        if not usuario.licencia_id:
+            return jsonify({"error": "El usuario no tiene una licencia asociada"}), 403
+
+        licencia = Licencia.query.get(usuario.licencia_id)
+        if not licencia:
+            return jsonify({"error": "Licencia no encontrada"}), 404
+
+        fecha_actual = datetime.utcnow().date()
+        if fecha_actual < licencia.fecha_inicio:
+            return jsonify({"error": "La licencia no ha comenzado"}), 403
+        if fecha_actual > licencia.fecha_fin:
+            return jsonify({"error": "La licencia ha expirado"}), 403
+
+
         access_token = jwt.encode(
             {
                 "sub": usuario_id,
@@ -97,9 +113,9 @@ def login():
         response.set_cookie(
             "refresh_token",
             refresh_token,
-            httponly=True,
+            httponly=False,
             secure=False,
-            samesite="Lax",
+            samesite="none",
             max_age=REFRESH_TOKEN_EXPIRATION * 24 * 3600
         )
 
@@ -111,14 +127,19 @@ def login():
 
 @main.route('<uuid:usuario_id>', methods=['GET'])
 @cross_origin(origin='*')
+@token_required
 def obtener_usuario(usuario_id):
     try:
         usuario = Usuario.query.get(usuario_id)
+        licencia = Licencia.query.get(usuario.licencia_id)
+
         if not usuario:
             return jsonify({"error": "Usuario no encontrado"}), 404
         return jsonify({
             "email": usuario.email,
-            "nombre": usuario.nombre
+            "nombre": usuario.nombre,
+            "licencia_fecha_fin":licencia.fecha_fin,
+            "licencia_nombre":licencia.nombre_licencia,
         }), 200
 
     except Exception as e:
