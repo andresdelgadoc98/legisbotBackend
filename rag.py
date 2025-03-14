@@ -4,8 +4,6 @@ from string import Template
 user_question = "¿quienes son las personas física?"
 
 
-
-
 retrival = retrival_fase(user_question,200)
 context_string = obtener_contexto_chunks_str(retrival)
 prompt_template = leer_txt('prompt.txt')

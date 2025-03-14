@@ -17,6 +17,16 @@ class Usuario(db.Model):
     chats = db.relationship("Chat", backref="usuario", lazy=True)
     licencia_id = db.Column(db.String(36), db.ForeignKey("licencias.id"), nullable=True)  # Relación con licencias
 
+class Documento(db.Model):
+    __tablename__ = 'documentos'
+    uuid = db.Column(UUID(as_uuid=True), primary_key=True, server_default=func.gen_random_uuid())
+    titulo =db.Column(db.Text, nullable=True)
+    fecha_publicacion = db.Column(db.DateTime)
+    folder = db.Column(db.String(255))
+    ruta = db.Column(db.Text)
+    jurisdiccion = db.Column(db.String(255), nullable=True)
+
+
 class Chat(db.Model):
     __tablename__ = "chats"
     id = db.Column(db.Integer, primary_key=True)

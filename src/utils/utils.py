@@ -7,13 +7,13 @@ from pdf2image import convert_from_path
 embedding = OllamaEmbeddings(model='nomic-embed-text')
 chunk_size = 450
 from string import Template
-from dotenv import load_dotenv
-import os
 from openai import OpenAI
 import pytesseract
 import requests
 import json
 
+from dotenv import load_dotenv
+import os
 load_dotenv()
 number_chunks = os.getenv('NUMBER_CHUNKS')
 API_OPENIA   = os.getenv('OpenAI_KEY')

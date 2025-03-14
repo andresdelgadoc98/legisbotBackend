@@ -46,7 +46,6 @@ def token_required(f):
 def validar_licencia(f):
     @wraps(f)
     def wrapper(*args, **kwargs):
-
         token = request.cookies.get("refresh_token")
         if not token:
             return jsonify({"error": "Token no proporcionado"}), 401
