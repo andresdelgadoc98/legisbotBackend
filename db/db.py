@@ -23,7 +23,7 @@ class Documento(db.Model):
     titulo =db.Column(db.Text, nullable=True)
     fecha_publicacion = db.Column(db.DateTime)
     folder = db.Column(db.String(255))
-    ruta = db.Column(db.Text)
+    ruta_actualizada = db.Column(db.Text)
     jurisdiccion = db.Column(db.String(255), nullable=True)
 
 

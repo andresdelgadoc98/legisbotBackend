@@ -56,7 +56,7 @@ def filtrar_por_jurisdiccion():
         "name": doc.titulo,
         "fecha_publicacion": doc.fecha_publicacion.isoformat() if doc.fecha_publicacion else None,
         "folder": doc.folder,
-        "file": get_URL(jurisdiccion,doc.ruta),
+        "file": doc.ruta_actualizada,
         "jurisdiccion": doc.jurisdiccion
     } for doc in documentos]
 
