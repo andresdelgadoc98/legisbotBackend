@@ -39,9 +39,9 @@ def init_socketio(socketio,app):
                 chat = Chat.query.get(chat_id)
                 contexto_caso = chat.contexto if chat.contexto else ""
 
-                client = OpenAI(api_key=GEMMA_KEY, base_url="https://generativelanguage.googleapis.com/v1beta/openai/")
+                #client = OpenAI(api_key=GEMMA_KEY, base_url="https://generativelanguage.googleapis.com/v1beta/openai/")
                 #client = OpenAI(api_key=DEEPSEEK_KEY, base_url="https://api.deepseek.com")
-                #client = OpenAI(api_key=API_OPENIA)
+                client = OpenAI(api_key=API_OPENIA)
                 if searchType == "documentos":
                     palabras_clave = get_keywords(user_question)["palabras"]
                     retrival = retrival_fase(palabras_clave, folder, 200)
