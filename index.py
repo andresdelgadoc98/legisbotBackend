@@ -19,8 +19,8 @@ if __name__ == '__main__':
             eventlet.wrap_ssl(eventlet.listen(('0.0.0.0', int(PORT))),
                               #certfile="src/certificates/certificate.crt",
                               #keyfile="src/certificates/private.key",
-                              certfile="src/certificates/server.crt",
-                              keyfile="src/certificates/server.key",
+                              certfile="src/certificates/certificate.crt",
+                              keyfile="src/certificates/private.key",
                               server_side=True),
             app
         )
