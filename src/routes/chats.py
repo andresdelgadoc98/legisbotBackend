@@ -4,7 +4,7 @@ from flask_cors import cross_origin
 from sqlalchemy.orm.exc import NoResultFound
 from sqlalchemy import desc
 from src.utils.middlewares import token_required
-
+from sqlalchemy import exc
 main = Blueprint('chats', __name__)
 @main.route("", methods=["POST"])
 @cross_origin(origin='*')
@@ -135,3 +135,34 @@ def actualizar_preferencia(chat_id):
     except Exception as e:
         db.session.rollback()
         return jsonify({"error": str(e)}), 500
+
+
+@main.route('<chat_id>/title', methods=['PUT'])
+@cross_origin(origin='*')
+def update_chat_title(chat_id):
+    print(chat_id)
+    try:
+        data = request.get_json()
+        if not data or 'titulo' not in data:
+            return jsonify({'error': 'El título es requerido'}), 400
+        nuevo_titulo = data['titulo']
+        if len(nuevo_titulo) > 45:
+            return jsonify({'error': 'El título no puede exceder 45 caracteres'}), 400
+        chat = Chat.query.get_or_404(chat_id)
+        chat.titulo = nuevo_titulo
+        db.session.commit()
+        return jsonify({
+            'message': 'Título actualizado exitosamente',
+            'chat': {
+                'id': chat.id,
+                'titulo': chat.titulo,
+                'fecha_creacion': chat.fecha_creacion.isoformat()
+            }
+        }), 200
+
+    except exc.IntegrityError:
+        db.session.rollback()
+        return jsonify({'error': 'Error de integridad en la base de datos'}), 400
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({'error': str(e)}), 500

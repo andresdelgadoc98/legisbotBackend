@@ -3,7 +3,7 @@ venv/
 env/
 .venv/
 pdfs/
-
+/src/certificates
 # Ignorar archivos de configuración de IDE
 .vscode/
 .idea/
