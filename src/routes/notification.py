@@ -56,7 +56,7 @@ def send_notification():
     result = check_jurisprudencias(year_week=year_week)
     print(result["total"])
     if result['documents']:
-        cred = credentials.Certificate('halachia-afd77-firebase-adminsdk-fbsvc-1957b526a0.json')
+        cred = credentials.Certificate('firebase.json')
         initialize_app(cred)
         message = messaging.MulticastMessage(
             notification=messaging.Notification(
