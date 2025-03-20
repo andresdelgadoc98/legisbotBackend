@@ -54,14 +54,13 @@ def run_check_until_success(year_week):
 
 
 next_friday = get_next_friday()
-year_week = int(generate_year_week(next_friday)) + 0
+year_week = int(generate_year_week(next_friday)) + 1
 result,total = run_check_until_success(year_week=year_week)
 
 if result:
     cred = credentials.Certificate('firebase.json')
     initialize_app(cred)
     registration_token = "cKdTE7k-ie6mBIz1Cn3yfE:APA91bGtKLT9echpEaWC5FjlxdlBvyWGMcK9tZcmp9DIGEdPkBolPDAs5wzO0rqg4wkEGdb-fVHRqDAUvR_h8q8tyLsWx0ruuRY0Y7ycHJBx3xfZG02Dr8E"
-
 
     message = messaging.Message(
         notification=messaging.Notification(

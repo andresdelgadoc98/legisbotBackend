@@ -52,7 +52,7 @@ def send_notification():
         return jsonify({"message": "No se encontraron tokens de notificación"}), 404
 
     next_friday = get_next_friday()
-    year_week = int(generate_year_week(next_friday)) + 0
+    year_week = int(generate_year_week(next_friday)) + 1
     result = check_jurisprudencias(year_week=year_week)
     print(result["total"])
     if result['documents']:
