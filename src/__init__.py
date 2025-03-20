@@ -7,6 +7,7 @@ from .routes import chats
 from .routes import usuarios
 from .routes import token
 from .routes import licencias
+from .routes import notification
 from db.db import db
 from dotenv import load_dotenv
 import os
@@ -31,6 +32,7 @@ def create_app():
     app.register_blueprint(usuarios.main, url_prefix='/api/users')
     app.register_blueprint(token.main, url_prefix='/api/token')
     app.register_blueprint(licencias.main, url_prefix='/api/licencias')
+    app.register_blueprint(notification.main, url_prefix='/api/notification')
 
     socketio.init_app(app)
     socket.init_socketio(socketio,app)

@@ -15,7 +15,8 @@ class Usuario(db.Model):
     contraseña = db.Column(db.String(255), nullable=False)
     fecha_registro = db.Column(db.DateTime, default=db.func.current_timestamp())
     chats = db.relationship("Chat", backref="usuario", lazy=True)
-    licencia_id = db.Column(db.String(36), db.ForeignKey("licencias.id"), nullable=True)  # Relación con licencias
+    licencia_id = db.Column(db.String(36), db.ForeignKey("licencias.id"), nullable=True)
+    token_notification = db.Column(db.String(255), nullable=False)
 
 class Documento(db.Model):
     __tablename__ = 'documentos'
