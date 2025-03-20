@@ -9,8 +9,7 @@ API_URL = "https://saturnodelgado.com:5002/api/notification/send_notifications"
 def check_api():
     while True:
         try:
-
-            response = requests.get(API_URL, timeout=10, verify=False)
+            response = requests.post(API_URL, timeout=10, verify=False)
             status_code = response.status_code
 
             # Si el código es 200, salir del bucle
