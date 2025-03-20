@@ -10,7 +10,7 @@ def check_api():
     while True:
         try:
 
-            response = requests.get(API_URL, timeout=10)  # Timeout de 10 segundos
+            response = requests.get(API_URL, timeout=10, verify=False)
             status_code = response.status_code
 
             # Si el código es 200, salir del bucle
