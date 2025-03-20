@@ -1,6 +1,8 @@
 from flask import request, jsonify, Blueprint
 from db.db import Usuario, db
 from flask_cors import cross_origin
+from src.utils.utils_notification import get_next_friday,generate_year_week,check_jurisprudencias
+from firebase_admin import credentials, messaging, initialize_app
 
 main = Blueprint('notification', __name__)
 
@@ -40,3 +42,34 @@ def delete_token_notification(usuario_id):
     usuario.token_notification = None
     db.session.commit()
     return jsonify({"message": "Token eliminado correctamente"})
+
+@main.route("/send_notifications", methods=["POST"])
+@cross_origin(origin='*')
+def send_notification():
+    tokens_result = Usuario.query.with_entities(Usuario.token_notification).all()
+    tokens = [token[0] for token in tokens_result if token[0]]
+    if not tokens:
+        return jsonify({"message": "No se encontraron tokens de notificación"}), 404
+
+    next_friday = get_next_friday()
+    year_week = int(generate_year_week(next_friday)) + 0
+    result = check_jurisprudencias(year_week=year_week)
+    print(result["total"])
+    if result['documents']:
+        cred = credentials.Certificate('halachia-afd77-firebase-adminsdk-fbsvc-1957b526a0.json')
+        initialize_app(cred)
+        message = messaging.MulticastMessage(
+            notification=messaging.Notification(
+                title="Jurisprudencias",
+                body=f'Se Actualizaron {result["total"]} Jurisprudencias',
+            ),
+            data={
+                'url': f'https://www.saturnodelgado.com/jurisprudencias?yearWeek={year_week}'
+            },
+            tokens=tokens,
+        )
+        response = messaging.send_each_for_multicast(message)
+        print('Successfully sent message:', response)
+        return jsonify({"message": f"Successfully sent message to {response.success_count} devices"}),200
+    else:
+        return jsonify({"message": "no se encontraron jurisprudencias "}), 404

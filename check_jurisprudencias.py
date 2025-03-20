@@ -1,9 +1,6 @@
 import requests
 from datetime import datetime, timedelta
-import logging
-
-logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
-logger = logging.getLogger(__name__)
+from firebase_admin import credentials, messaging, initialize_app
 
 LOCAL_API_URL = "https://localhost:5002/api/documents/jurisprudencias"
 
@@ -39,11 +36,9 @@ def check_jurisprudencias(year_week):
         if documents:
             return True,total
         else:
-            logger.info(f"No se encontraron documentos para {year_week}. Reintentando...")
             return False,total
 
     except requests.exceptions.RequestException as e:
-        logger.error(f"Error al realizar la solicitud: {str(e)}")
         return False,0
 
 def run_check_until_success(year_week):
@@ -63,25 +58,21 @@ year_week = int(generate_year_week(next_friday)) + 0
 result,total = run_check_until_success(year_week=year_week)
 
 if result:
-    from firebase_admin import credentials, messaging, initialize_app
-
-    cred = credentials.Certificate('halachia-afd77-firebase-adminsdk-fbsvc-5a8b00edd7.json')
+    cred = credentials.Certificate('firebase.json')
     initialize_app(cred)
-    registration_token = "d6iFG7qkjebNAYM99JpCVn:APA91bHg-rF2nvq51Gq3CYFhhvTCJhrKPuuHY0IxW6_sdU19bRK_7zSCDcJ4OiVigjTgnp94FuUZCG92bKwRQsycXaivFkw9zz-J-6-A8bCsxCtTFfYeY-U"
+    registration_token = "cKdTE7k-ie6mBIz1Cn3yfE:APA91bGtKLT9echpEaWC5FjlxdlBvyWGMcK9tZcmp9DIGEdPkBolPDAs5wzO0rqg4wkEGdb-fVHRqDAUvR_h8q8tyLsWx0ruuRY0Y7ycHJBx3xfZG02Dr8E"
 
 
     message = messaging.Message(
         notification=messaging.Notification(
-            title='Jurisprudencias Nuevas',
-            body=f'Se subieron {total} Jurisprudencias!',
+            title="Jurisprudencias",
+            body=f'Se Actualizaron {total} Jurisprudencias',
         ),
         data={
-            'url': 'https://localhost:3000/jurisprudencias?yearWeek=202511'
+            'url': 'https://www.saturnodelgado.com/jurisprudencias?yearWeek=' + str(year_week)
         },
         token=registration_token,
     )
 
     response = messaging.send(message)
     print('Successfully sent message:', response)
-
-

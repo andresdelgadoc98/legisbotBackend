@@ -7,7 +7,7 @@ from src.utils.middlewares import token_required
 from flask import request, jsonify, Blueprint
 from db.db import Documento,db
 import requests
-from datetime import datetime
+from src.utils.utils_notification import check_jurisprudencias
 
 load_dotenv()
 main = Blueprint('documents', __name__)
@@ -69,169 +69,9 @@ def filtrar_por_jurisdiccion():
 @main.route('/jurisprudencias', methods=['POST'])
 def get_jurisprudencias():
     try:
-        external_url = "https://sjfsemanal.scjn.gob.mx/services/sjftesismicroservice/api/public/tesis?page=0&size=20&isSJFSemanal=true"
         data = request.get_json() or {}
         year_week = data.get("yearWeek", "")
-        payload = {
-            "classifiers": [],
-            "searchTerms": [
-                {
-                    "expression": year_week,
-                    "fields": ["semana"],
-                    "fieldsUser": "",
-                    "fieldsText": "",
-                    "operator": 1,
-                    "operatorUser": "O",
-                    "operatorText": "O",
-                    "lsFields": [],
-                    "esInicial": False,
-                    "noHighlight": False,
-                    "excludeTerms": True
-                }
-            ],
-            "bFacet": True,
-            "idApp": "SJFSEMANAL",
-            "lbSearch": [],
-            "filterMatrix": [
-                {
-                    "filters": [
-                        {"name": "idTipoTesis", "value": ["1"], "allSelected": False, "visible": False,
-                         "isMatrix": False},
-                        {"name": "numInstancia", "value": ["6"], "allSelected": False, "visible": False,
-                         "isMatrix": False}
-                    ],
-                    "instancia": 6
-                },
-                {
-                    "filters": [
-                        {"name": "idTipoTesis", "value": ["1"], "allSelected": False, "visible": False,
-                         "isMatrix": False},
-                        {"name": "numInstancia", "value": ["60"], "allSelected": False, "visible": False,
-                         "isMatrix": False}
-                    ],
-                    "instancia": 60
-                },
-                {
-                    "filters": [
-                        {"name": "idTipoTesis", "value": ["1"], "allSelected": False, "visible": False,
-                         "isMatrix": False},
-                        {"name": "numInstancia", "value": ["1"], "allSelected": False, "visible": False,
-                         "isMatrix": False}
-                    ],
-                    "instancia": 1
-                },
-                {
-                    "filters": [
-                        {"name": "idTipoTesis", "value": ["1"], "allSelected": False, "visible": False,
-                         "isMatrix": False},
-                        {"name": "numInstancia", "value": ["2"], "allSelected": False, "visible": False,
-                         "isMatrix": False}
-                    ],
-                    "instancia": 2
-                },
-                {
-                    "filters": [
-                        {"name": "idTipoTesis", "value": ["1"], "allSelected": False, "visible": False,
-                         "isMatrix": False},
-                        {"name": "numInstancia", "value": ["50"], "allSelected": False, "visible": False,
-                         "isMatrix": False}
-                    ],
-                    "instancia": 50
-                },
-                {
-                    "filters": [
-                        {"name": "idTipoTesis", "value": ["1"], "allSelected": False, "visible": False,
-                         "isMatrix": False},
-                        {"name": "numInstancia", "value": ["7"], "allSelected": False, "visible": False,
-                         "isMatrix": False}
-                    ],
-                    "instancia": 7
-                },
-                {
-                    "filters": [
-                        {"name": "idTipoTesis", "value": ["0"], "allSelected": False, "visible": False,
-                         "isMatrix": False},
-                        {"name": "numInstancia", "value": ["6"], "allSelected": False, "visible": False,
-                         "isMatrix": False}
-                    ],
-                    "instancia": 6
-                },
-                {
-                    "filters": [
-                        {"name": "idTipoTesis", "value": ["0"], "allSelected": False, "visible": False,
-                         "isMatrix": False},
-                        {"name": "numInstancia", "value": ["60"], "allSelected": False, "visible": False,
-                         "isMatrix": False}
-                    ],
-                    "instancia": 60
-                },
-                {
-                    "filters": [
-                        {"name": "idTipoTesis", "value": ["0"], "allSelected": False, "visible": False,
-                         "isMatrix": False},
-                        {"name": "numInstancia", "value": ["1"], "allSelected": False, "visible": False,
-                         "isMatrix": False}
-                    ],
-                    "instancia": 1
-                },
-                {
-                    "filters": [
-                        {"name": "idTipoTesis", "value": ["0"], "allSelected": False, "visible": False,
-                         "isMatrix": False},
-                        {"name": "numInstancia", "value": ["2"], "allSelected": False, "visible": False,
-                         "isMatrix": False}
-                    ],
-                    "instancia": 2
-                },
-                {
-                    "filters": [
-                        {"name": "idTipoTesis", "value": ["0"], "allSelected": False, "visible": False,
-                         "isMatrix": False},
-                        {"name": "numInstancia", "value": ["50"], "allSelected": False, "visible": False,
-                         "isMatrix": False}
-                    ],
-                    "instancia": 50
-                },
-                {
-                    "filters": [
-                        {"name": "idTipoTesis", "value": ["0"], "allSelected": False, "visible": False,
-                         "isMatrix": False},
-                        {"name": "numInstancia", "value": ["7"], "allSelected": False, "visible": False,
-                         "isMatrix": False}
-                    ],
-                    "instancia": 7
-                }
-            ],
-            "filterExpression": ""
-        }
-        response = requests.post(
-            external_url,
-            json=payload,
-            headers={"Content-Type": "application/json"}
-        )
-        response.raise_for_status()
-        data = response.json()
-
-        transformed_documents = [
-            {
-                "id": doc["id"],
-                "title": doc["rubro"],
-                "date": datetime.strptime(doc["fechaPublicacion"], "%Y-%m-%dT%H:%M:%SZ").strftime("%Y-%m-%d"),
-                "summary": "No viola el principio de proporcionalidad del artículo 22 constitucional." if doc[
-                                                                                                              "id"] == "2030098" else "Resumen no disponible",
-                # Ejemplo, puedes personalizar esto
-                "source": f"{doc['instanciaAbr']}; {doc['epocaAbr']}; {doc['fuente']}; {doc['claveTesis']}; {'J' if doc['ta_tj'] == 1 else 'TA'}; Publicación: {doc['textoPublicacion'].split(' y,')[0]}"
-            }
-            for doc in data["documents"]
-        ]
-
-        transformed_response = {
-            "documents": transformed_documents,
-            "classifiers": data["classifiers"],
-            "total": data["total"],
-            "totalPage": data["totalPage"]
-        }
-
+        transformed_response =  check_jurisprudencias(year_week)
         return jsonify(transformed_response), 200
     except requests.exceptions.RequestException as e:
         return jsonify({"error": str(e)}), 500
