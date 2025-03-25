@@ -1,6 +1,5 @@
 import requests
 import time
-
 from datetime import datetime
 
 
@@ -12,7 +11,6 @@ def check_api():
             response = requests.post(API_URL, timeout=10, verify=False)
             status_code = response.status_code
 
-            # Si el código es 200, salir del bucle
             if status_code == 200:
                 print(f"[{datetime.now()}] Éxito: Código 200 recibido.")
                 break

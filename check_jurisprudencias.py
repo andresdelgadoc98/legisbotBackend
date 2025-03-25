@@ -2,7 +2,7 @@ import requests
 from datetime import datetime, timedelta
 from firebase_admin import credentials, messaging, initialize_app
 
-LOCAL_API_URL = "https://localhost:5002/api/documents/jurisprudencias"
+LOCAL_API_URL = "https://saturnodelgado:5002/api/documents/jurisprudencias"
 
 def get_next_friday():
     today = datetime.now()
@@ -52,15 +52,14 @@ def run_check_until_success(year_week):
         else:
             return False, 0
 
-
 next_friday = get_next_friday()
-year_week = int(generate_year_week(next_friday)) + 1
+year_week = int(generate_year_week(next_friday)) - 2
 result,total = run_check_until_success(year_week=year_week)
 
 if result:
     cred = credentials.Certificate('firebase.json')
     initialize_app(cred)
-    registration_token = "cKdTE7k-ie6mBIz1Cn3yfE:APA91bGtKLT9echpEaWC5FjlxdlBvyWGMcK9tZcmp9DIGEdPkBolPDAs5wzO0rqg4wkEGdb-fVHRqDAUvR_h8q8tyLsWx0ruuRY0Y7ycHJBx3xfZG02Dr8E"
+    registration_token = "fmD6HYTf9XlpETB7RPtkor:APA91bHbv89BZhhWP_x_Mt6wiTCnQYeGeoj5kgs4kMGM3c2BJfcoSxnAz2P8yC-w1-BNG3XpbtdNNVJ_oBVfShkXCHLymMsHTiphlUNQAoRWUjjydzFrQ1Q"
 
     message = messaging.Message(
         notification=messaging.Notification(

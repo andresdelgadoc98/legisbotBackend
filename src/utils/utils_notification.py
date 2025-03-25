@@ -1,6 +1,5 @@
-import requests
+
 from datetime import datetime, timedelta
-from firebase_admin import credentials, messaging, initialize_app
 import requests
 
 
@@ -24,7 +23,7 @@ def generate_year_week(date):
 
 
 def check_jurisprudencias(year_week):
-    external_url = "https://sjfsemanal.scjn.gob.mx/services/sjftesismicroservice/api/public/tesis?page=0&size=20&isSJFSemanal=true"
+    external_url = "https://sjfsemanal.scjn.gob.mx/services/sjftesismicroservice/api/public/tesis?page=0&size=100&isSJFSemanal=true"
 
     payload = {
         "classifiers": [],
@@ -47,117 +46,39 @@ def check_jurisprudencias(year_week):
         "idApp": "SJFSEMANAL",
         "lbSearch": [],
         "filterMatrix": [
-            {
-                "filters": [
-                    {"name": "idTipoTesis", "value": ["1"], "allSelected": False, "visible": False,
-                     "isMatrix": False},
-                    {"name": "numInstancia", "value": ["6"], "allSelected": False, "visible": False,
-                     "isMatrix": False}
-                ],
-                "instancia": 6
-            },
-            {
-                "filters": [
-                    {"name": "idTipoTesis", "value": ["1"], "allSelected": False, "visible": False,
-                     "isMatrix": False},
-                    {"name": "numInstancia", "value": ["60"], "allSelected": False, "visible": False,
-                     "isMatrix": False}
-                ],
-                "instancia": 60
-            },
-            {
-                "filters": [
-                    {"name": "idTipoTesis", "value": ["1"], "allSelected": False, "visible": False,
-                     "isMatrix": False},
-                    {"name": "numInstancia", "value": ["1"], "allSelected": False, "visible": False,
-                     "isMatrix": False}
-                ],
-                "instancia": 1
-            },
-            {
-                "filters": [
-                    {"name": "idTipoTesis", "value": ["1"], "allSelected": False, "visible": False,
-                     "isMatrix": False},
-                    {"name": "numInstancia", "value": ["2"], "allSelected": False, "visible": False,
-                     "isMatrix": False}
-                ],
-                "instancia": 2
-            },
-            {
-                "filters": [
-                    {"name": "idTipoTesis", "value": ["1"], "allSelected": False, "visible": False,
-                     "isMatrix": False},
-                    {"name": "numInstancia", "value": ["50"], "allSelected": False, "visible": False,
-                     "isMatrix": False}
-                ],
-                "instancia": 50
-            },
-            {
-                "filters": [
-                    {"name": "idTipoTesis", "value": ["1"], "allSelected": False, "visible": False,
-                     "isMatrix": False},
-                    {"name": "numInstancia", "value": ["7"], "allSelected": False, "visible": False,
-                     "isMatrix": False}
-                ],
-                "instancia": 7
-            },
-            {
-                "filters": [
-                    {"name": "idTipoTesis", "value": ["0"], "allSelected": False, "visible": False,
-                     "isMatrix": False},
-                    {"name": "numInstancia", "value": ["6"], "allSelected": False, "visible": False,
-                     "isMatrix": False}
-                ],
-                "instancia": 6
-            },
-            {
-                "filters": [
-                    {"name": "idTipoTesis", "value": ["0"], "allSelected": False, "visible": False,
-                     "isMatrix": False},
-                    {"name": "numInstancia", "value": ["60"], "allSelected": False, "visible": False,
-                     "isMatrix": False}
-                ],
-                "instancia": 60
-            },
-            {
-                "filters": [
-                    {"name": "idTipoTesis", "value": ["0"], "allSelected": False, "visible": False,
-                     "isMatrix": False},
-                    {"name": "numInstancia", "value": ["1"], "allSelected": False, "visible": False,
-                     "isMatrix": False}
-                ],
-                "instancia": 1
-            },
-            {
-                "filters": [
-                    {"name": "idTipoTesis", "value": ["0"], "allSelected": False, "visible": False,
-                     "isMatrix": False},
-                    {"name": "numInstancia", "value": ["2"], "allSelected": False, "visible": False,
-                     "isMatrix": False}
-                ],
-                "instancia": 2
-            },
-            {
-                "filters": [
-                    {"name": "idTipoTesis", "value": ["0"], "allSelected": False, "visible": False,
-                     "isMatrix": False},
-                    {"name": "numInstancia", "value": ["50"], "allSelected": False, "visible": False,
-                     "isMatrix": False}
-                ],
-                "instancia": 50
-            },
-            {
-                "filters": [
-                    {"name": "idTipoTesis", "value": ["0"], "allSelected": False, "visible": False,
-                     "isMatrix": False},
-                    {"name": "numInstancia", "value": ["7"], "allSelected": False, "visible": False,
-                     "isMatrix": False}
-                ],
-                "instancia": 7
-            }
+            {"filters": [
+                {"name": "idTipoTesis", "value": ["1"], "allSelected": False, "visible": False, "isMatrix": False},
+                {"name": "numInstancia", "value": ["6"], "allSelected": False, "visible": False, "isMatrix": False}],
+             "instancia": 6},
+
+            {"filters": [
+                {"name": "idTipoTesis", "value": ["1"], "allSelected": False, "visible": False, "isMatrix": False},
+                {"name": "numInstancia", "value": ["60"], "allSelected": False, "visible": False, "isMatrix": False}],
+             "instancia": 60},
+
+            {"filters": [
+                {"name": "idTipoTesis", "value": ["1"], "allSelected": False, "visible": False, "isMatrix": False},
+                {"name": "numInstancia", "value": ["1"], "allSelected": False, "visible": False, "isMatrix": False}],
+             "instancia": 1},
+
+            {"filters": [
+                {"name": "idTipoTesis", "value": ["1"], "allSelected": False, "visible": False, "isMatrix": False},
+                {"name": "numInstancia", "value": ["2"], "allSelected": False, "visible": False, "isMatrix": False}],
+             "instancia": 2},
+
+            {"filters": [
+                {"name": "idTipoTesis", "value": ["1"], "allSelected": False, "visible": False, "isMatrix": False},
+                {"name": "numInstancia", "value": ["50"], "allSelected": False, "visible": False, "isMatrix": False}],
+             "instancia": 50},
+
+            {"filters": [
+                {"name": "idTipoTesis", "value": ["1"], "allSelected": False, "visible": False, "isMatrix": False},
+                {"name": "numInstancia", "value": ["7"], "allSelected": False, "visible": False, "isMatrix": False}],
+             "instancia": 7}
         ],
         "filterExpression": ""
     }
+
     response = requests.post(
         external_url,
         json=payload,

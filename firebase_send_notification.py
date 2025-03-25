@@ -1,17 +1,20 @@
 from firebase_admin import credentials, messaging, initialize_app
 
-cred = credentials.Certificate('halachia-afd77-firebase-adminsdk-fbsvc-5a8b00edd7.json')
+cred = credentials.Certificate('firebase.json')
 initialize_app(cred)
 
-registration_token = "d6iFG7qkjebNAYM99JpCVn:APA91bHg-rF2nvq51Gq3CYFhhvTCJhrKPuuHY0IxW6_sdU19bRK_7zSCDcJ4OiVigjTgnp94FuUZCG92bKwRQsycXaivFkw9zz-J-6-A8bCsxCtTFfYeY-U"
-
+registration_token = "fmD6HYTf9XlpETB7RPtkor:APA91bHbv89BZhhWP_x_Mt6wiTCnQYeGeoj5kgs4kMGM3c2BJfcoSxnAz2P8yC-w1-BNG3XpbtdNNVJ_oBVfShkXCHLymMsHTiphlUNQAoRWUjjydzFrQ1Q"
+total = "10"
+year_week = 202511
 message = messaging.Message(
     notification=messaging.Notification(
-        title='Título de la Notificación',
-        body='Este es el cuerpo de la notificación.',
+        title="Jurisprudencias",
+        body=f'Se Actualizaron {total} Jurisprudencias',
     ),
+    data={
+        'url': 'https://www.saturnodelgado.com/jurisprudencias?yearWeek=' + str(year_week)
+    },
     token=registration_token,
 )
-
 response = messaging.send(message)
 print('Successfully sent message:', response)
