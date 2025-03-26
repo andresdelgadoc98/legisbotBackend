@@ -53,7 +53,7 @@ def run_check_until_success(year_week):
             return False, 0
 
 next_friday = get_next_friday()
-year_week = int(generate_year_week(next_friday)) - 2
+year_week = int(generate_year_week(next_friday)) + 1
 result,total = run_check_until_success(year_week=year_week)
 
 if result:
