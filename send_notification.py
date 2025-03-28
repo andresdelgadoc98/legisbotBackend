@@ -3,7 +3,7 @@ import time
 from datetime import datetime
 
 
-API_URL = "https://saturnodelgado.com:5002/api/notification/send_notifications"
+API_URL = "http://localhost:5002/api/notification/send_notifications"
 
 def check_api():
     while True:

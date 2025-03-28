@@ -52,7 +52,7 @@ def send_notification():
         return jsonify({"message": "No se encontraron tokens de notificación"}), 404
 
     next_friday = get_next_friday()
-    year_week = int(generate_year_week(next_friday)) + 1
+    year_week = int(generate_year_week(next_friday))
     print(year_week)
     result = check_jurisprudencias(year_week=year_week)
     print(result["total"])
@@ -65,7 +65,7 @@ def send_notification():
                 body=f'Se Actualizaron {result["total"]} Jurisprudencias',
             ),
             data={
-                'url': f'https://www.saturnodelgado.com/jurisprudencias?yearWeek={year_week}'
+                'url': f'https://www.saturnodelgado.com/jurisprudencias'
             },
             tokens=tokens,
         )
