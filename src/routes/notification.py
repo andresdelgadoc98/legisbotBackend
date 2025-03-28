@@ -3,6 +3,7 @@ from db.db import Usuario, db
 from flask_cors import cross_origin
 from src.utils.utils_notification import get_next_friday,generate_year_week,check_jurisprudencias
 from firebase_admin import credentials, messaging, initialize_app
+import firebase_admin
 
 main = Blueprint('notification', __name__)
 
@@ -56,9 +57,12 @@ def send_notification():
     print(year_week)
     result = check_jurisprudencias(year_week=year_week)
     print(result["total"])
+
     if result['documents']:
-        cred = credentials.Certificate('firebase.json')
-        initialize_app(cred)
+        if not firebase_admin._apps:
+            cred = credentials.Certificate('firebase.json')
+            initialize_app(cred)
+
         message = messaging.MulticastMessage(
             notification=messaging.Notification(
                 title="Jurisprudencias",
@@ -71,6 +75,6 @@ def send_notification():
         )
         response = messaging.send_each_for_multicast(message)
         print('Successfully sent message:', response)
-        return jsonify({"message": f"Successfully sent message to {response.success_count} devices"}),200
+        return jsonify({"message": f"Successfully sent message to {response.success_count} devices"}), 200
     else:
-        return jsonify({"message": "no se encontraron jurisprudencias "}), 404
+        return jsonify({"message": "No se encontraron jurisprudencias"}), 404
