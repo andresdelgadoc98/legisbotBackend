@@ -53,6 +53,7 @@ def send_notification():
 
     next_friday = get_next_friday()
     year_week = int(generate_year_week(next_friday)) + 1
+    print(year_week)
     result = check_jurisprudencias(year_week=year_week)
     print(result["total"])
     if result['documents']:
